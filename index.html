@@ -383,7 +383,42 @@
   </div>
 
   <!-- Load your Measure.js SDK -->
-  <script src="https://measure-app-584091253886.europe-west3.run.app/measure.js"></script>
+  <script>
+    // Your Measure.js SDK
+    window._measure = (function() {
+      var endpoint = "https://measure-app-584091253886.europe-west3.run.app/events";
+      function sendData(data) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', endpoint, true);
+        xhr.withCredentials = true;
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(data));
+      }
+      return {
+        event: function(eventName, parameters) {
+          var data = {
+            en: eventName,
+            url: window.location.href,
+            r: document.referrer,
+            p: parameters
+          };
+          sendData(data);
+        },
+        pageview: function(params) {
+          this.event('pageview', params);
+        },
+        consent: function(consentParams) {
+          this.event('consent', consentParams);
+        },
+        identify: function(userId, traits) {
+          this.event('identify', { user_id: userId, traits: traits });
+        },
+        reset: function() {
+          this.event('reset', {});
+        }
+      };
+    })();
+  </script>
   <script>
     let logEntries = [];
     let consentGranted = false;
