@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Measure.js Test Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    #log { background: #f5f5f5; padding: 10px; margin: 20px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Measure.js Test Page</h1>
+  <button onclick="grantConsent()">Grant Consent</button>
+  <button onclick="revokeConsent()">Revoke Consent</button>
+  <button onclick="trackPageview()">Track Pageview</button>
+  <button onclick="trackCustomEvent()">Track Custom Event</button>
+  <div id="log"></div>
+
+  <!-- Load your Measure.js SDK (replace with your deployed URL if needed) -->
+  <script src="https://your-cloud-run-url/measure.js"></script>
+  <script>
+    function log(msg) {
+      document.getElementById('log').innerHTML += `<div>${msg}</div>`;
+    }
+
+    function grantConsent() {
+      _measure.consent({ id: true, analytics: true });
+      log('Consent granted');
+    }
+
+    function revokeConsent() {
+      _measure.consent({ id: false, analytics: false });
+      log('Consent revoked');
+    }
+
+    function trackPageview() {
+      _measure.pageview({ page_title: 'Test Page', test: true });
+      log('Pageview tracked');
+    }
+
+    function trackCustomEvent() {
+      _measure.event('custom_event', { category: 'test', action: 'click', label: 'custom-button', value: 1 });
+      log('Custom event tracked');
+    }
+  </script>
+</body>
+</html>
