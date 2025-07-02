@@ -2,47 +2,819 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Measure.js Test Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Measure.js Analytics Test Suite</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-    #log { background: #f5f5f5; padding: 10px; margin: 20px 0; border-radius: 5px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .test-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .test-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 8px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: linear-gradient(45deg, #f093fb, #f5576c);
+      box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    button.secondary:hover {
+      box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+    }
+
+    button.danger {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    button.danger:hover {
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .log-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .log-title {
+      font-size: 1.3em;
+      color: #333;
+    }
+
+    #log {
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      height: 300px;
+      overflow-y: auto;
+      border: 2px solid #333;
+    }
+
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 2px 0;
+    }
+
+    .log-timestamp {
+      color: #888;
+      margin-right: 10px;
+    }
+
+    .log-success {
+      color: #00ff00;
+    }
+
+    .log-error {
+      color: #ff4444;
+    }
+
+    .log-info {
+      color: #4488ff;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-connected {
+      background: #00ff00;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .status-disconnected {
+      background: #ff4444;
+      box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+    }
+
+    .consent-status {
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .consent-granted {
+      background: rgba(0, 255, 0, 0.1);
+      color: #008800;
+      border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    .consent-revoked {
+      background: rgba(255, 68, 68, 0.1);
+      color: #cc0000;
+      border: 1px solid rgba(255, 68, 68, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .test-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Measure.js Test Page</h1>
-  <button onclick="grantConsent()">Grant Consent</button>
-  <button onclick="revokeConsent()">Revoke Consent</button>
-  <button onclick="trackPageview()">Track Pageview</button>
-  <button onclick="trackCustomEvent()">Track Custom Event</button>
-  <div id="log"></div>
+  <div class="container">
+    <div class="header">
+      <h1>Measure.js Analytics Test Suite</h1>
+      <p class="subtitle">Comprehensive testing environment for user interaction tracking</p>
+      <div class="status-indicator" id="connectionStatus"></div>
+      <span id="connectionText">Connecting to Measure.js...</span>
+    </div>
 
-  <!-- Load your Measure.js SDK (replace with your deployed URL if needed) -->
+    <div class="test-grid">
+      <!-- Consent Management -->
+      <div class="test-section">
+        <h2 class="section-title">Consent Management</h2>
+        <div id="consentStatus" class="consent-status consent-revoked">
+          Consent Status: Not Granted
+        </div>
+        <div class="button-group">
+          <button onclick="grantConsent()">Grant Full Consent</button>
+          <button onclick="grantPartialConsent()" class="secondary">Partial Consent</button>
+          <button onclick="revokeConsent()" class="danger">Revoke Consent</button>
+        </div>
+      </div>
+
+      <!-- Page Tracking -->
+      <div class="test-section">
+        <h2 class="section-title">Page Tracking</h2>
+        <div class="form-group">
+          <label for="pageTitle">Page Title:</label>
+          <input type="text" id="pageTitle" value="Test Page" placeholder="Enter page title">
+        </div>
+        <div class="form-group">
+          <label for="pageUrl">Page URL:</label>
+          <input type="text" id="pageUrl" value="/test" placeholder="Enter page URL">
+        </div>
+        <div class="button-group">
+          <button onclick="trackPageview()">Track Pageview</button>
+          <button onclick="trackCustomPageview()" class="secondary">Custom Pageview</button>
+        </div>
+      </div>
+
+      <!-- Event Tracking -->
+      <div class="test-section">
+        <h2 class="section-title">Event Tracking</h2>
+        <div class="form-group">
+          <label for="eventName">Event Name:</label>
+          <input type="text" id="eventName" value="custom_event" placeholder="Enter event name">
+        </div>
+        <div class="form-group">
+          <label for="eventCategory">Category:</label>
+          <select id="eventCategory">
+            <option value="engagement">Engagement</option>
+            <option value="conversion">Conversion</option>
+            <option value="navigation">Navigation</option>
+            <option value="test">Test</option>
+          </select>
+        </div>
+        <div class="button-group">
+          <button onclick="trackCustomEvent()">Track Custom Event</button>
+          <button onclick="trackClickEvent()" class="secondary">Track Click</button>
+          <button onclick="trackScrollEvent()" class="secondary">Track Scroll</button>
+        </div>
+      </div>
+
+      <!-- User Identification -->
+      <div class="test-section">
+        <h2 class="section-title">User Identification</h2>
+        <div class="form-group">
+          <label for="userId">User ID:</label>
+          <input type="text" id="userId" placeholder="Enter user ID">
+        </div>
+        <div class="form-group">
+          <label for="userEmail">User Email:</label>
+          <input type="email" id="userEmail" placeholder="Enter user email">
+        </div>
+        <div class="button-group">
+          <button onclick="identifyUser()">Identify User</button>
+          <button onclick="clearUserIdentity()" class="danger">Clear Identity</button>
+        </div>
+      </div>
+
+      <!-- E-commerce Tracking -->
+      <div class="test-section">
+        <h2 class="section-title">E-commerce Events</h2>
+        <div class="form-group">
+          <label for="productName">Product Name:</label>
+          <input type="text" id="productName" value="Test Product" placeholder="Enter product name">
+        </div>
+        <div class="form-group">
+          <label for="productPrice">Price:</label>
+          <input type="number" id="productPrice" value="29.99" step="0.01" placeholder="Enter price">
+        </div>
+        <div class="button-group">
+          <button onclick="trackProductView()">Product View</button>
+          <button onclick="trackAddToCart()" class="secondary">Add to Cart</button>
+          <button onclick="trackPurchase()" class="secondary">Purchase</button>
+        </div>
+      </div>
+
+      <!-- Performance Testing -->
+      <div class="test-section">
+        <h2 class="section-title">Performance Testing</h2>
+        <div class="button-group">
+          <button onclick="performanceTest()">Run Performance Test</button>
+          <button onclick="bulkEventTest()" class="secondary">Bulk Events (100x)</button>
+          <button onclick="stressTest()" class="danger">Stress Test (1000x)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Container -->
+    <div class="log-container">
+      <div class="log-header">
+        <h2 class="log-title">Activity Log</h2>
+        <div>
+          <button onclick="clearLog()" class="danger">Clear Log</button>
+          <button onclick="exportLog()" class="secondary">Export Log</button>
+        </div>
+      </div>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <!-- Load your Measure.js SDK -->
   <script src="https://your-cloud-run-url/measure.js"></script>
   <script>
-    function log(msg) {
-      document.getElementById('log').innerHTML += `<div>${msg}</div>`;
+    let logEntries = [];
+    let consentGranted = false;
+
+    // Utility functions
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = {
+        timestamp,
+        message,
+        type
+      };
+
+      logEntries.push(entry);
+
+      const logDiv = document.getElementById('log');
+      const entryDiv = document.createElement('div');
+      entryDiv.className = 'log-entry';
+      entryDiv.innerHTML = `<span class="log-timestamp">${timestamp}</span><span class="log-${type}">${message}</span>`;
+      logDiv.appendChild(entryDiv);
+      logDiv.scrollTop = logDiv.scrollHeight;
     }
 
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+      logEntries = [];
+      log('Log cleared', 'info');
+    }
+
+    function exportLog() {
+      const logData = JSON.stringify(logEntries, null, 2);
+      const blob = new Blob([logData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `measure-test-log-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      log('Log exported successfully', 'success');
+    }
+
+    function updateConsentStatus() {
+      const statusDiv = document.getElementById('consentStatus');
+      if (consentGranted) {
+        statusDiv.className = 'consent-status consent-granted';
+        statusDiv.textContent = 'Consent Status: Granted';
+      } else {
+        statusDiv.className = 'consent-status consent-revoked';
+        statusDiv.textContent = 'Consent Status: Not Granted';
+      }
+    }
+
+    function updateConnectionStatus(connected) {
+      const statusIndicator = document.getElementById('connectionStatus');
+      const statusText = document.getElementById('connectionText');
+
+      if (connected) {
+        statusIndicator.className = 'status-indicator status-connected';
+        statusText.textContent = 'Connected to Measure.js';
+      } else {
+        statusIndicator.className = 'status-indicator status-disconnected';
+        statusText.textContent = 'Disconnected from Measure.js';
+      }
+    }
+
+    // Consent functions
     function grantConsent() {
-      _measure.consent({ id: true, analytics: true });
-      log('Consent granted');
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.consent({ id: true, analytics: true });
+          consentGranted = true;
+          updateConsentStatus();
+          log('Full consent granted (ID: true, Analytics: true)', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error granting consent: ${error.message}`, 'error');
+      }
+    }
+
+    function grantPartialConsent() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.consent({ id: false, analytics: true });
+          consentGranted = true;
+          updateConsentStatus();
+          log('Partial consent granted (ID: false, Analytics: true)', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error granting partial consent: ${error.message}`, 'error');
+      }
     }
 
     function revokeConsent() {
-      _measure.consent({ id: false, analytics: false });
-      log('Consent revoked');
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.consent({ id: false, analytics: false });
+          consentGranted = false;
+          updateConsentStatus();
+          log('Consent revoked (ID: false, Analytics: false)', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error revoking consent: ${error.message}`, 'error');
+      }
     }
 
+    // Tracking functions
     function trackPageview() {
-      _measure.pageview({ page_title: 'Test Page', test: true });
-      log('Pageview tracked');
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.pageview({
+            page_title: document.getElementById('pageTitle').value,
+            page_location: window.location.href,
+            test: true
+          });
+          log('Standard pageview tracked', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking pageview: ${error.message}`, 'error');
+      }
+    }
+
+    function trackCustomPageview() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.pageview({
+            page_title: document.getElementById('pageTitle').value,
+            page_location: document.getElementById('pageUrl').value,
+            custom_parameter: 'test_value',
+            timestamp: Date.now()
+          });
+          log('Custom pageview tracked with additional parameters', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking custom pageview: ${error.message}`, 'error');
+      }
     }
 
     function trackCustomEvent() {
-      _measure.event('custom_event', { category: 'test', action: 'click', label: 'custom-button', value: 1 });
-      log('Custom event tracked');
+      try {
+        if (typeof _measure !== 'undefined') {
+          const eventName = document.getElementById('eventName').value;
+          const category = document.getElementById('eventCategory').value;
+          _measure.event(eventName, {
+            category: category,
+            action: 'test_action',
+            label: 'custom_label',
+            value: Math.floor(Math.random() * 100),
+            custom_data: { test: true, timestamp: Date.now() }
+          });
+          log(`Custom event tracked: ${eventName} (${category})`, 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking custom event: ${error.message}`, 'error');
+      }
     }
+
+    function trackClickEvent() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.event('click', {
+            element_type: 'button',
+            element_id: 'test_button',
+            page_location: window.location.href
+          });
+          log('Click event tracked', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking click event: ${error.message}`, 'error');
+      }
+    }
+
+    function trackScrollEvent() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.event('scroll', {
+            scroll_depth: Math.floor(Math.random() * 100),
+            page_height: document.body.scrollHeight,
+            viewport_height: window.innerHeight
+          });
+          log('Scroll event tracked', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking scroll event: ${error.message}`, 'error');
+      }
+    }
+
+    // User identification
+    function identifyUser() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          const userId = document.getElementById('userId').value;
+          const userEmail = document.getElementById('userEmail').value;
+
+          if (userId || userEmail) {
+            _measure.identify(userId, {
+              email: userEmail,
+              identified_at: new Date().toISOString()
+            });
+            log(`User identified: ${userId || userEmail}`, 'success');
+          } else {
+            log('Please enter User ID or Email', 'error');
+          }
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error identifying user: ${error.message}`, 'error');
+      }
+    }
+
+    function clearUserIdentity() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          _measure.reset();
+          document.getElementById('userId').value = '';
+          document.getElementById('userEmail').value = '';
+          log('User identity cleared', 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error clearing user identity: ${error.message}`, 'error');
+      }
+    }
+
+    // E-commerce tracking
+    function trackProductView() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          const productName = document.getElementById('productName').value;
+          const price = parseFloat(document.getElementById('productPrice').value);
+
+          _measure.event('view_item', {
+            item_name: productName,
+            item_category: 'test_category',
+            price: price,
+            currency: 'USD'
+          });
+          log(`Product view tracked: ${productName} ($${price})`, 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking product view: ${error.message}`, 'error');
+      }
+    }
+
+    function trackAddToCart() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          const productName = document.getElementById('productName').value;
+          const price = parseFloat(document.getElementById('productPrice').value);
+
+          _measure.event('add_to_cart', {
+            item_name: productName,
+            item_category: 'test_category',
+            price: price,
+            quantity: 1,
+            currency: 'USD'
+          });
+          log(`Add to cart tracked: ${productName}`, 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking add to cart: ${error.message}`, 'error');
+      }
+    }
+
+    function trackPurchase() {
+      try {
+        if (typeof _measure !== 'undefined') {
+          const productName = document.getElementById('productName').value;
+          const price = parseFloat(document.getElementById('productPrice').value);
+
+          _measure.event('purchase', {
+            transaction_id: 'test_' + Date.now(),
+            value: price,
+            currency: 'USD',
+            items: [{
+              item_name: productName,
+              price: price,
+              quantity: 1
+            }]
+          });
+          log(`Purchase tracked: ${productName} ($${price})`, 'success');
+        } else {
+          log('Measure.js not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Error tracking purchase: ${error.message}`, 'error');
+      }
+    }
+
+    // Performance testing
+    function performanceTest() {
+      const startTime = performance.now();
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (let i = 0; i < 10; i++) {
+        try {
+          if (typeof _measure !== 'undefined') {
+            _measure.event('performance_test', {
+              iteration: i,
+              timestamp: Date.now()
+            });
+            successCount++;
+          }
+        } catch (error) {
+          errorCount++;
+        }
+      }
+
+      const endTime = performance.now();
+      const duration = (endTime - startTime).toFixed(2);
+
+      log(`Performance test completed: ${successCount} success, ${errorCount} errors in ${duration}ms`, 'info');
+    }
+
+    function bulkEventTest() {
+      log('Starting bulk event test (100 events)...', 'info');
+      const startTime = performance.now();
+
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          try {
+            if (typeof _measure !== 'undefined') {
+              _measure.event('bulk_test', {
+                batch_id: 'bulk_100',
+                event_number: i + 1,
+                timestamp: Date.now()
+              });
+            }
+
+            if (i === 99) {
+              const endTime = performance.now();
+              const duration = (endTime - startTime).toFixed(2);
+              log(`Bulk test completed: 100 events in ${duration}ms`, 'success');
+            }
+          } catch (error) {
+            log(`Bulk test error at event ${i + 1}: ${error.message}`, 'error');
+          }
+        }, i * 10);
+      }
+    }
+
+    function stressTest() {
+      log('Starting stress test (1000 events)...', 'info');
+      const startTime = performance.now();
+      let completed = 0;
+
+      for (let i = 0; i < 1000; i++) {
+        setTimeout(() => {
+          try {
+            if (typeof _measure !== 'undefined') {
+              _measure.event('stress_test', {
+                batch_id: 'stress_1000',
+                event_number: i + 1,
+                timestamp: Date.now()
+              });
+            }
+            completed++;
+
+            if (completed === 1000) {
+              const endTime = performance.now();
+              const duration = (endTime - startTime).toFixed(2);
+              log(`Stress test completed: 1000 events in ${duration}ms`, 'success');
+            }
+          } catch (error) {
+            log(`Stress test error at event ${i + 1}: ${error.message}`, 'error');
+          }
+        }, i * 2);
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      log('Measure.js Test Suite initialized', 'info');
+
+      // Check if Measure.js is loaded
+      if (typeof _measure !== 'undefined') {
+        updateConnectionStatus(true);
+        log('Measure.js SDK loaded successfully', 'success');
+      } else {
+        updateConnectionStatus(false);
+        log('Measure.js SDK not found - please update the script URL', 'error');
+      }
+
+      updateConsentStatus();
+
+      // Auto-track page load
+      setTimeout(() => {
+        if (typeof _measure !== 'undefined') {
+          _measure.pageview({
+            page_title: 'Measure.js Test Suite',
+            auto_tracked: true
+          });
+          log('Auto-tracked page load', 'info');
+        }
+      }, 1000);
+    });
+
+    // Add some automatic event tracking for demonstration
+    window.addEventListener('scroll', function() {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent % 25 === 0 && scrollPercent > 0) {
+        if (typeof _measure !== 'undefined') {
+          _measure.event('scroll_milestone', {
+            scroll_percent: scrollPercent,
+            auto_tracked: true
+          });
+        }
+      }
+    });
   </script>
 </body>
 </html>
